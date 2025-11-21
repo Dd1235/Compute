@@ -6,4 +6,8 @@ For the coding that is, not for the writing.
 
 Right now, its just reviewing and looking into what can be done.
 
-Need to explore how event loops and go routines work.
+todo:
+
+- [] Need to explore how event loops and go routines work.
+- [] more on redis queue
+- [] writing benchmarks and metrics
