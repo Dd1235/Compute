@@ -14,7 +14,7 @@ while True:
     r = requests.get(f"{SERVER}/next_job")
     if r.status_code == 204:
         print("No jobs. Sleeping...")
-        time.sleep(0.1)
+        time.sleep(2)
         continue
 
     job = r.json()

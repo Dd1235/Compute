@@ -33,6 +33,17 @@ P90: 0.10610103607177734
 P99: 0.10786104202270508
 ```
 
+## bench 2 parallel
+
+Kept worker sleep time as 2 sec. Because parallely jobs are getting submitted, worker doesn't sleep that much
+
+```
+python bench2.py
+Submitted 100 jobs with 20 concurrent clients.
+Total time: 7.004s
+Throughput: 14.28 jobs/sec
+```
+
 ```
 
 ## long polling
