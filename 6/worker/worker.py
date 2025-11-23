@@ -20,4 +20,16 @@ while True:
     time.sleep(2)
 
     r.hset(f"job:{job['id']}", mapping={"status": "done", "result": result})
+
+    # update: we are using websockets to push the notification to the client, so we also publish this notification to the "job_updates" channel
+
+    payload = json.dumps(
+        {
+            "job_id": job["id"],
+            "status": "done",
+            "result": result,
+        }
+    )
+    r.publish("job_updates", payload)
+
     print(f"Done! job {job['id']} = {result}")
