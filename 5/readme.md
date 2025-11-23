@@ -1,3 +1,5 @@
+# Exercise 5: Worker uses short polling to pull next_job from server, client also checks /status endpoint for update
+
 current model is pull based.
 
 To eliminate polling, can have push model, but worker must run its own http server, have an open port, server needs to know workers ip/port
