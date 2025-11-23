@@ -26,7 +26,6 @@ def submit_and_wait(i):
     wait_for_result(job_id)
 
 
-# === Parallel benchmark ===
 def run_parallel(n=100, workers=20):
     t0 = time.time()
 

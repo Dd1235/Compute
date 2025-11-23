@@ -92,6 +92,7 @@ func handleJobResult(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "job not found! How did you even process it and send??", 404)
 }
 
+// can implement long polling here, it is for clients
 func handleStatus(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	stateMutex.Lock()
