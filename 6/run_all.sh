@@ -20,7 +20,7 @@ echo "Assuming Redis is already running at localhost:6379"
 echo "Starting Go server..."
 (cd ./server && go run main.go) &
 SERVER_PID=$!
-sleep 1
+sleep 3
 
 echo "Starting Python worker..."
 (cd ./worker && python worker.py) &

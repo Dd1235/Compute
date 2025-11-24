@@ -83,7 +83,20 @@ func (h *Hub) remove(jobID string, c *websocket.Conn) {
 	}
 }
 
-// send a message to all the connections subscribed to that jobID
+func (h *Hub) broadcast(jobID string, msg []byte) {
+	h.mu.RLock()
+	conns := make([]*websocket.Conn, 0, len(h.clients[jobID]))
+	for c := range h.clients[jobID] {
+		conns = append(conns, c)
+	}
+	h.mu.RUnlock()
+
+	for _, c := range conns {
+		_ = c.WriteMessage(websocket.TextMessage, msg)
+	}
+}
+
+// send a message to all the connections subscribed to that jobID and close those connections
 func (h *Hub) broadcastAndClose(jobID string, msg []byte) {
 	h.mu.RLock()
 	conns := make([]*websocket.Conn, 0, len(h.clients[jobID]))
@@ -239,7 +252,12 @@ func main() {
 				log.Printf("marshal error: %v", err)
 				continue
 			}
-			hub.broadcastAndClose(update.JobID, data)
+			stat := update.Status
+			if stat == "done" {
+				hub.broadcastAndClose(update.JobID, data)
+			} else {
+				hub.broadcast(update.JobID, data)
+			}
 		}
 	}()
 

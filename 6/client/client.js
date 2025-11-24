@@ -18,7 +18,7 @@ async function runJob(input) {
   ws.on("open", () => console.log("Waiting for job completion..."));
   ws.on("message", (msg) => {
     const data = JSON.parse(msg);
-    console.log("Job update:", data);
+    console.log("Job update received by client:", data);
     if (data.status === "done") {
       console.log(`Job ${data.job_id} completed with result: ${data.result}`);
       ws.close();

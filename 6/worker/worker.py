@@ -8,6 +8,21 @@ r = redis.Redis(host="localhost", port=6379, db=0)
 
 print("Worker started... waiting for jobs.")
 
+
+def process_job(job):
+    job_id = job["id"]
+    for pct in range(0, 101, 20):
+        time.sleep(1)
+        update = {"job_id": job_id, "status": f"progress: {pct}%", "result": ""}
+        r.hset(f"job:{job_id}", mapping={"status": update["status"]})
+        r.publish("job_updates", json.dumps(update))
+
+    result = job["input"].upper()
+    update = {"job_id": job_id, "status": "done", "result": result}
+    r.hset(f"job:{job['id']}", mapping={"status": "done", "result": result})
+    r.publish("job_updates", json.dumps(update))
+
+
 while True:
 
     # atomic retrival and deletion
@@ -15,21 +30,4 @@ while True:
     _, job_data = r.brpop("jobs")  # blocks until new job
     job = json.loads(job_data)
     print(f"Processing job {job['id']} -> {job['input']}")
-
-    result = job["input"].upper()
-    time.sleep(2)
-
-    r.hset(f"job:{job['id']}", mapping={"status": "done", "result": result})
-
-    # update: we are using websockets to push the notification to the client, so we also publish this notification to the "job_updates" channel
-
-    payload = json.dumps(
-        {
-            "job_id": job["id"],
-            "status": "done",
-            "result": result,
-        }
-    )
-    r.publish("job_updates", payload)
-
-    print(f"Done! job {job['id']} = {result}")
+    process_job(job)
