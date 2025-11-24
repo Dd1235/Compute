@@ -193,3 +193,16 @@ func timeoutExample() {
 
 web sockets, pointer receiver, go routines, channels, timers, tickers, lpush, brpop, sync, redis, upgrader, sync.RWMutex, how there are not sets so map[string]struct{}, mu.Lock(), defer hub.mu.Unlock(), delete(set, c), len(set), Unmrshal and marshal (bytes <-> go type), type smt struct {}, rdb.HSet(), rdb.Subscribe("channel name"), struct/class for the hub ie job id to set of client connections mapping, to abstract away locking it, check origin, HGetAll
 json.loads(job_data),r.publish("where", payload),
+
+## misc
+
+```
+ps aux | grep worker.py
+pkill -f worker.py
+ps -o pid,ppid,pgid,command | grep worker.py
+
+lsof -i :8080
+kill -9 <pid>
+```
+
+Encountered this problem that run_all.sh, the ctrl+c wasn't getting propograted and the worker processes were still living, so there were so many workers, and as i made changes to workers, i would see still some of the jobs being handled the old way.

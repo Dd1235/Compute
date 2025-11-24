@@ -1,39 +1,37 @@
 #!/bin/bash
-# ==========================================================
-# run_all.sh
-# Starts Go server, Python worker, and Node client together
-# ==========================================================
+# run_all.sh — start and stop Go server, Python worker, and Node clients cleanly
 
-set -e  # exit if any command fails
+set -e
 
-SERVER_FILE="./server/main.go"
-WORKER_FILE="./worker/worker.py"
-CLIENT_FILE="./client/client.js"
+echo "Cleaning up old processes..."
+pkill -f "main.go" 2>/dev/null || true
+pkill -f "worker.py" 2>/dev/null || true
+pkill -f "client.js" 2>/dev/null || true
+redis-cli FLUSHDB >/dev/null 2>&1 || true
 
-echo "Checking dependencies..."
-command -v go >/dev/null 2>&1 || { echo "Go not installed"; exit 1; }
-command -v python >/dev/null 2>&1 || { echo "Python not installed"; exit 1; }
-command -v node >/dev/null 2>&1 || { echo "Node.js not installed"; exit 1; }
-
-echo "Assuming Redis is already running at localhost:6379"
+echo "Environment cleaned."
 
 echo "Starting Go server..."
-(cd ./server && go run main.go) &
+(cd server && exec go run main.go) &
 SERVER_PID=$!
-sleep 3
+sleep 3  
 
 echo "Starting Python worker..."
-(cd ./worker && python worker.py) &
+(cd worker && exec python worker.py) &
 WORKER_PID=$!
-sleep 1
+sleep 1   # wait for worker to connect to Redis
 
-echo "Starting Node client..."
-(cd ./client && node client.js) &
-CLIENT_PID=$!
+echo "Starting Node clients..."
+(cd client && exec node client.js 1) &
+(cd client && exec node client.js 2) &
+(cd client && exec node client.js 3) &
+
 
 echo "All components running."
 echo "Press Ctrl+C to stop everything."
 
-trap 'echo "Stopping..."; kill $SERVER_PID $WORKER_PID $CLIENT_PID 2>/dev/null; exit 0' INT
+# trap Ctrl+C and terminate all stored PIDs
+trap 'echo "Stopping everything..."; \
+      kill $SERVER_PID $WORKER_PID $CLIENT1_PID $CLIENT2_PID $CLIENT3_PID 2>/dev/null; exit 0' SIGINT
 
 wait
