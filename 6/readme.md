@@ -10,7 +10,7 @@
 
 Set up redis either using docker `docker run -d -p 6379:6379 --name redis redis:7` or natively.
 
-- Update: added a client, and a websocket connection between client and server, so no shortpolling for job status. So worker now adds jobs to a channel, there is a go routine that is listening to this channel, when it received a job update, and broadcasts to the connections listening on that jobID
+- Update: added a client, and a websocket connection between client and server, so no shortpolling for job status. So worker now adds jobs to a channel, there is a go routine that is listening to this channel, when it received a job update, and broadcasts to the connections listening on that jobID. So we send updates every x% to the client
 
 There is also a keep alive function that keeps connections alive, new go routine is spawned for this.
 
