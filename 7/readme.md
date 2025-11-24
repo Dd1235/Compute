@@ -1,0 +1,6 @@
+- Here instead of workers taking jobs randomly
+- Worker has to register with go
+- Scheduler checks all the workers in the set, gets their status, if idle, assigns a job to them (if job is popped and it could not be assigned then we put it back into the queue but in a fifo basis rpush not lpush)
+- To assign to worker, each worker has their own queue, put it in `worker:<workerid>:jobs` queue, worker is monitoring this q to take jobs
+- worker updates heartbeat every 5 seconds, by setting that value in redis but we are not monitoring these heartbeats to check if worker has gone down so that we assign those jobs to someone else. if worker goes down the jobs are also gone.
+- worker after done, updates the corresponding value for that job_id, there is no notifying the client
